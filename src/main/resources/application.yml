@@ -1,0 +1,19 @@
+server:
+    port: 8080
+spring:
+    application:
+        name: findly
+    datasource:
+        url: jdbc:postgresql://localhost:5432/findly_db
+        username: asaki
+        password: hakunamatata
+    jpa:
+        generate-ddl: true
+
+image-storage:
+    directory:
+        name: images
+
+token:
+    signing:
+        key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
