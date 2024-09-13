@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = "category")
 @IdClass(CategoryTranslationId.class)
 public class CategoryTranslation {
 	@Id
@@ -29,6 +31,5 @@ public class CategoryTranslation {
 	@JoinColumn(name = "language_id")
 	private Language language;
 	@Column(name = "name")
-	private String name;	
-
+	private String name;
 }
