@@ -34,7 +34,7 @@ public class CategoryService {
 		Category category = repository.findById(id).orElse(null);
 		
 		if (category != null)
-			mappingUtil.convertToCategoryDto(category);
+			return mappingUtil.convertToCategoryDto(category);
 		
 		return null;
 	}
