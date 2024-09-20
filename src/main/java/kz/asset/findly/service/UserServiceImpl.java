@@ -1,19 +1,15 @@
 package kz.asset.findly.service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kz.asset.findly.model.dto.UserDto;
-import kz.asset.findly.model.entity.Role;
 import kz.asset.findly.model.entity.User;
 import kz.asset.findly.repository.UserRepository;
 import kz.asset.findly.util.MappingUtil;
@@ -33,7 +29,7 @@ public class UserServiceImpl implements UserService {
 		if (user == null)
 			throw new UsernameNotFoundException(String.format("%s is not found...", username));
 		
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+		return user;
 	}
 
 	@Override
@@ -57,7 +53,28 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 	
-	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-	}	
+	@Override
+	public UserDto findById(Integer id) {
+		User user = repository.findById(id).orElse(null);
+		
+		if (user != null) {
+			return mappingUtil.convertToUserDto(user);
+		}
+		
+		return null;		
+	}
+	
+	@Override
+	public UserDto update(UserDto dto) {
+		User user = repository.save(mappingUtil.convertToUser(dto));
+		UserDto result = mappingUtil.convertToUserDto(user);
+		
+		result.setPassword(null);
+		
+		return result;
+	}
+	
+//	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+//		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+//	}	
 }

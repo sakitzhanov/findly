@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
@@ -52,7 +53,7 @@ public class User implements UserDetails {
 	private Timestamp deletedAt;
 	@OneToMany(mappedBy = "user")
 	private List<LostProperty> lostProperties;
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role",
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -60,6 +61,9 @@ public class User implements UserDetails {
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if (roles == null)
+			return Set.of();
+		
 		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
 	}
 	

@@ -1,5 +1,6 @@
 package kz.asset.findly.model.dto;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,8 @@ public class UserDto {
 	private String password;
 	private String phoneNumber;
 	private Boolean isActive;
+	private Timestamp createdAt;
+	private Timestamp deletedAt;
 	private List<LostPropertyDto> lostProperties;
 	private Set<RoleDto> roles;
 }

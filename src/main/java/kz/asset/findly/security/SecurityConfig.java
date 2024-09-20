@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 	private final UserService userService;
 	private final JwtAuthorizationFilter jwtAuthorizationFilter;
+	private final PasswordEncoder passwordEncoder;
 	
 	@Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -51,8 +52,8 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(request ->
 //				request.requestMatchers("/api/login", "/api/registration", "/api/images/**")
-				request.requestMatchers("/**")
-					.permitAll()
+				request.requestMatchers(HttpMethod.PUT, "/api/users/**").authenticated()
+				.requestMatchers("/**").permitAll()
 				.anyRequest()
 					.authenticated()
 			)
@@ -68,14 +69,9 @@ public class SecurityConfig {
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 		
 		daoAuthenticationProvider.setUserDetailsService(userService);
-		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
 		
 		return daoAuthenticationProvider;
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean
