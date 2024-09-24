@@ -1,11 +1,13 @@
 package kz.asset.findly.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,8 @@ public class UserServiceImpl implements UserService {
 	private UserRepository repository;
 	@Autowired
 	private MappingUtil mappingUtil;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -58,16 +62,28 @@ public class UserServiceImpl implements UserService {
 		User user = repository.findById(id).orElse(null);
 		
 		if (user != null) {
-			return mappingUtil.convertToUserDto(user);
+			UserDto result = mappingUtil.convertToUserDto(user);
+			
+			result.setPassword(null);
+			
+			return result;
 		}
 		
 		return null;		
 	}
 	
 	@Override
-	public UserDto update(UserDto dto) {
-		User user = repository.save(mappingUtil.convertToUser(dto));
-		UserDto result = mappingUtil.convertToUserDto(user);
+	public UserDto update(UserDto dto) {		
+		Optional<User> user = repository.findById(dto.getId());
+		
+		user.ifPresent(item -> {			
+			if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty())
+				dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+			else
+				dto.setPassword(item.getPassword());	
+		});
+		
+		UserDto result = mappingUtil.convertToUserDto(repository.save(mappingUtil.convertToUser(dto)));
 		
 		result.setPassword(null);
 		

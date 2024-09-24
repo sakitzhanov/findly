@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import kz.asset.findly.model.dto.RoleDto;
 import kz.asset.findly.model.dto.UserDto;
 import kz.asset.findly.model.entity.Role;
 import kz.asset.findly.model.entity.User;
@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService service;
-	private final PasswordEncoder passwordEncoder;
 	
 	@GetMapping
 	public ResponseEntity<List<UserDto>> all() {	
@@ -59,12 +58,15 @@ public class UserController {
 		
 		if (!user.getRoles().equals(dto.getRoles()) && !authRoleNames.contains("ADMIN"))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-			
 		
-		if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty())
-			dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-		else
-			dto.setPassword(user.getPassword());
+		if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty()) {
+			Set<String> roleNames = dto.getRoles().stream()
+					.map(RoleDto::getName)
+					.collect(Collectors.toSet());
+			
+			if ((roleNames.contains("ADMIN") || roleNames.contains("MODER")) && !authRoleNames.contains("ADMIN"))
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();				
+		}
 		
 		return ResponseEntity.status(HttpStatus.OK).body(service.update(dto));
 	}
