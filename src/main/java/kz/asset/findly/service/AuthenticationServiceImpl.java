@@ -22,7 +22,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public JwtAuthenticationResponse login(LoginRequest request) {
 		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-		User user = userService.findByUsername(request.getUsername());
+		User user = userService.loadUserByUsername(request.getUsername());
 		
 		if (user == null)
 			throw new IllegalArgumentException("Invalid username or password");

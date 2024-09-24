@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,26 +24,6 @@ public class UserServiceImpl implements UserService {
 	private MappingUtil mappingUtil;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = findByUsername(username);
-		
-		if (user == null)
-			throw new UsernameNotFoundException(String.format("%s is not found...", username));
-		
-		return user;
-	}
-
-	@Override
-	public User findByUsername(String username) {
-		return repository.findByUsername(username);
-	}
-
-	@Override
-	public User save(User user) {
-		return repository.save(user);
-	}
 	
 	@Override
 	public List<UserDto> findAll() {
@@ -71,6 +50,11 @@ public class UserServiceImpl implements UserService {
 		
 		return null;		
 	}
+
+	@Override
+	public User save(User user) {
+		return repository.save(user);
+	}
 	
 	@Override
 	public UserDto update(UserDto dto) {		
@@ -88,6 +72,27 @@ public class UserServiceImpl implements UserService {
 		result.setPassword(null);
 		
 		return result;
+	}
+
+	@Override
+	public User loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = repository.findByUsername(username);
+		
+		if (user == null)
+			throw new UsernameNotFoundException(String.format("User with following username %s was not found...", username));
+		
+		return user;
+	}
+	
+	@Override
+	public User loadUserById(Integer id) {
+		User user = repository.findById(id).orElse(null);
+		
+		if (user == null)
+			throw new RuntimeException(String.format("User with following id %s was not found...", id));
+		
+		
+		return user;
 	}
 	
 //	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {

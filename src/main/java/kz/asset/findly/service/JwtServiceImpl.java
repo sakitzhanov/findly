@@ -15,6 +15,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import kz.asset.findly.model.entity.User;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -22,8 +23,8 @@ public class JwtServiceImpl implements JwtService {
 	private String jwtSigningKey;
 	
 	@Override
-	public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+	public Integer extractId(String token) {
+        return extractClaim(token, (claims) -> Integer.valueOf(claims.getSubject()));
 	}
 
 	@Override
@@ -40,15 +41,15 @@ public class JwtServiceImpl implements JwtService {
 
 	@Override
 	public boolean isTokenValid(String token, UserDetails userDetails) {
-		final String userName = extractUsername(token);
+		final Integer id = extractId(token);
         
-		return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+		return (id.equals(((User) userDetails).getId())) && !isTokenExpired(token);
 	}
 	
 	private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
         		.setClaims(extraClaims)
-        		.setSubject(userDetails.getUsername())
+        		.setSubject(((User) userDetails).getId().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

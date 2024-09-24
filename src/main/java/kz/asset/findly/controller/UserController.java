@@ -64,7 +64,7 @@ public class UserController {
 					.map(RoleDto::getName)
 					.collect(Collectors.toSet());
 			
-			if ((roleNames.contains("ADMIN") || roleNames.contains("MODER")) && !authRoleNames.contains("ADMIN"))
+			if ((roleNames.contains("ADMIN") || roleNames.contains("MODER")) && !(authRoleNames.contains("ADMIN") || authUser.getId().equals(dto.getId())))
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();				
 		}
 		
