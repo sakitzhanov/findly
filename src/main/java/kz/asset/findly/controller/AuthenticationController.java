@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
-
+import kz.asset.findly.model.request.CheckPhoneNumberRequest;
+import kz.asset.findly.model.request.CheckUsernameRequest;
 import kz.asset.findly.model.request.LoginRequest;
 import kz.asset.findly.model.request.RegistrationRequest;
+import kz.asset.findly.model.response.CredentialAvailabilityResponse;
 import kz.asset.findly.model.response.JwtAuthenticationResponse;
 import kz.asset.findly.service.AuthenticationService;
 
@@ -26,6 +28,18 @@ public class AuthenticationController {
 	@PostMapping("/registration")
 	public ResponseEntity<JwtAuthenticationResponse> registration(@RequestBody RegistrationRequest request) {
 		return ResponseEntity.ok(service.registration(request));
+		
+	}
+	
+	@PostMapping("/check-username")
+	public ResponseEntity<CredentialAvailabilityResponse> checkUsername(@RequestBody CheckUsernameRequest request) {
+		return ResponseEntity.ok(service.checkUsername(request));
+		
+	}
+	
+	@PostMapping("/check-phone-number")
+	public ResponseEntity<CredentialAvailabilityResponse> checkPhoneNumber(@RequestBody CheckPhoneNumberRequest request) {
+		return ResponseEntity.ok(service.checkPhoneNumber(request));
 		
 	}
 }

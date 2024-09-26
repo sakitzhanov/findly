@@ -94,6 +94,16 @@ public class UserServiceImpl implements UserService {
 		
 		return user;
 	}
+
+	@Override
+	public long countUsersByUsername(String username) {
+		return repository.countUsersByUsername(username);
+	}
+
+	@Override
+	public long countUsersByPhoneNumber(String phoneNumber) {
+		return repository.countUsersByPhoneNumber(phoneNumber);
+	}
 	
 //	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
 //		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());

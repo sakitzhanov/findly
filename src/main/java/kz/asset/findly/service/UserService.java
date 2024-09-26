@@ -14,4 +14,6 @@ public interface UserService extends UserDetailsService {
 	public UserDto update(UserDto dto);
 	public User loadUserByUsername(String username);
 	public User loadUserById(Integer id);
+	public long countUsersByUsername(String username);
+	public long countUsersByPhoneNumber(String phoneNumber);
 }

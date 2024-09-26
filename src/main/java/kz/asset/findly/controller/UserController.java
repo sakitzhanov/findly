@@ -59,14 +59,12 @@ public class UserController {
 		if (!user.getRoles().equals(dto.getRoles()) && !authRoleNames.contains("ADMIN"))
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		
-		if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty()) {
-			Set<String> roleNames = dto.getRoles().stream()
-					.map(RoleDto::getName)
-					.collect(Collectors.toSet());
-			
-			if ((roleNames.contains("ADMIN") || roleNames.contains("MODER")) && !(authRoleNames.contains("ADMIN") || authUser.getId().equals(dto.getId())))
-				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();				
-		}
+		Set<String> roleNames = dto.getRoles().stream()
+				.map(RoleDto::getName)
+				.collect(Collectors.toSet());
+		
+		if ((roleNames.contains("ADMIN") || roleNames.contains("MODER")) && !(authRoleNames.contains("ADMIN") || authUser.getId().equals(dto.getId())))
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		
 		return ResponseEntity.status(HttpStatus.OK).body(service.update(dto));
 	}

@@ -6,8 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import kz.asset.findly.model.entity.User;
+import kz.asset.findly.model.request.CheckPhoneNumberRequest;
+import kz.asset.findly.model.request.CheckUsernameRequest;
 import kz.asset.findly.model.request.LoginRequest;
 import kz.asset.findly.model.request.RegistrationRequest;
+import kz.asset.findly.model.response.CredentialAvailabilityResponse;
 import kz.asset.findly.model.response.JwtAuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -45,5 +48,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		String jwt = jwtService.generateToken(user);
 		
 		return JwtAuthenticationResponse.builder().token(jwt).build();
+	}
+
+	@Override
+	public CredentialAvailabilityResponse checkUsername(CheckUsernameRequest request) {
+		long count = userService.countUsersByUsername(request.getUsername());
+		
+		return CredentialAvailabilityResponse.builder()
+				.isTaken(count != 0)
+				.build();
+	}
+
+	@Override
+	public CredentialAvailabilityResponse checkPhoneNumber(CheckPhoneNumberRequest request) {
+		long count = userService.countUsersByPhoneNumber(request.getPhoneNumber());
+		
+		return CredentialAvailabilityResponse.builder()
+				.isTaken(count != 0)
+				.build();
 	}
 }
